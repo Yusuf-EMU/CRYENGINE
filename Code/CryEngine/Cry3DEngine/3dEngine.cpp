@@ -1,5 +1,8 @@
 // Copyright 2001-2019 Crytek GmbH / Crytek Group. All rights reserved.
 
+//USE CRYENGINE THREADING, THIS IS JUST A MINOR OPTIMIZATION NOTE
+#include <thread>
+#include <iostream>
 #include "StdAfx.h"
 #include <CryAnimation/ICryAnimation.h>
 #include <CryGame/IGameFramework.h>
@@ -677,9 +680,12 @@ void C3DEngine::Update()
 		}
 	}
 
-	CRenderMeshUtils::ClearHitCache();
+	std::thread threadname(CRenderMeshUtils::ClearHitCache);
+	//CRenderMeshUtils::ClearHitCache();
 
 	CleanUpOldDecals();
+	
+	threadname.join();
 
 	CDecalRenderNode::ResetDecalUpdatesCounter();
 
